@@ -49,7 +49,7 @@ void WebServer::handleRequest(int clientSocket) {
         buffer[bytesRead] = '\0';
         request += buffer;
         if (request.find("\r\n\r\n") != std::string::npos) {
-            break; 
+            break;
         }
     }
 
@@ -68,6 +68,10 @@ void WebServer::handleRequest(int clientSocket) {
             response << "HTTP/1.1 200 OK\r\n";
             response << "Content-Type: text/html\r\n";
             response << "Content-Length: " << fileContent.length() << "\r\n";
+            
+            // Set cache-related headers
+            response << "Cache-Control: public, max-age=3600\r\n"; // Cache the resource for 1 hour
+
             response << "\r\n";
 
             response << fileContent;
@@ -76,9 +80,9 @@ void WebServer::handleRequest(int clientSocket) {
             return;
         }
 
-        filename = "index.html"; 
+        filename = "index.html";
     } else {
-        filename = path.substr(1); 
+        filename = path.substr(1);
     }
 
     std::ifstream file(filename, std::ios::binary);
@@ -91,6 +95,10 @@ void WebServer::handleRequest(int clientSocket) {
         response << "HTTP/1.1 200 OK\r\n";
         response << "Content-Type: text/html\r\n";
         response << "Content-Length: " << content.length() << "\r\n";
+        
+        // Set cache-related headers
+        response << "Cache-Control: public, max-age=3600\r\n"; // Cache the resource for 1 hour
+
         response << "\r\n";
 
         response << content;
@@ -118,7 +126,6 @@ void WebServer::loadFileContent() {
         std::cerr << "Failed to load file content." << std::endl;
     }
 }
-
 
 int main() {
     WebServer server;
